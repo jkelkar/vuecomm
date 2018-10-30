@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<!-- 2018 Jay Kelkar <jkelkar at gmail.com> -->
+<!-- Free to use in any form -->
+
+<head>
+  <meta charset="utf-8">
+  <title>Complex Button with data change</title>
+  <script src="../../node_modules/vue/dist/vue.min.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="../../static/css/examples.css" />
+</head>
+
+<body>
+  <!-- The parent component can get the name of the button as typed in and pass it to vbutton-->
+  <div id="app" class="fixed-width"> <!-- parent level -->
+    <h2>A externally changeable button component</h2>
+    <label>Enter the button name:</label>
+    <input type="text" value = '' v-model="bname">
+    <p>Causing data change</p>
+    <vbutton :btext="bname"></vbutton> <!-- child -->
+  </div>
+  <div class="notes">
+    Here we have an input field which collects the name value for the button and <i>passes</i> it
+    to the the <b>vbutton</b> component using <i>props</i>.<br>
+    The <b>parent</b> usually does not know about the internals of the <b>child</b>.
+  </div>
+  <script>
+  Vue.component('vbutton', {
+    // this is the child component
+    template: `
+    <div>
+<button @click="action" :class="{'green': active, 'red': !active}">
+  {{ btext }}
+</button>
+<div class="basic" v-if="clicked"> Did you click it? </div>
+  </div>
+`,
+    props: ['btext'], // name must be quoted
+    data: function () {
+      return {
+        active: false,
+        clicked: false
+      }
+    },
+    methods: {
+      action: function () {
+        let that = this
+        this.active = !this.active
+        this.clicked = true
+        setTimeout(function () {
+          that.clicked = false
+        }, 500
+        )
+      }
+    }
+  })
+  // Main vue instance
+  var app = new Vue({
+    el: '#app',
+    // data in global Vue instance can have constant values, but every other component
+    // needs to return data values
+    data: {
+      bname: '??'
+    },
+    methods: {
+    }
+  })
+  </script>
+</body>
+
+</html>

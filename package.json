@@ -1,0 +1,22 @@
+{
+  "name": "vuecomm",
+  "version": "1.0.0",
+  "description": "This talks and explains about the many ways a component can talk to other components in VueJs.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "VueJS",
+    "components",
+    "communication"
+  ],
+  "author": "Jay Kelkar (jkelkar @ gmail.com)",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {
+    "bluebird": "^3.5.2",
+    "vue": "^2.5.17",
+    "vuex": "^3.0.1"
+  }
+}

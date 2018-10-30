@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<!-- 2018 Jay Kelkar <jkelkar at gmail.com> -->
+<!-- Free to use in any form -->
+
+<head>
+  <meta charset="utf-8">
+  <title>Simple Button component</title>
+  <script src="../../node_modules/vue/dist/vue.min.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="../../static/css/examples.css" />
+</head>
+
+<body>
+  <div id="app" class="fixed-width">
+    <h2>A button component</h2>
+    <p>Causing data change</p>
+    <vbutton></vbutton>
+  </div>
+
+  <script>
+  Vue.component('vbutton', {
+    // this component shows lists in two ways
+    template: `
+    <div>
+<button @click="action" :class="{'green': active, 'red': !active}">
+  {{ btext }}
+</button>
+<div class="basic" v-if="clicked"> Did you click it? </div>
+  </div>
+`,
+    data: function () {
+      return {
+        btext: 'Press it!',
+        active: false,
+        clicked: false
+      }
+    },
+    methods: {
+      action: function () {
+        let that = this
+        this.active = !this.active
+        this.clicked = true
+        setTimeout(function () {
+          that.clicked = false
+        }, 500
+        )
+      }
+    }
+  })
+  // Main vue instance
+  var app = new Vue({
+    el: '#app',
+    // data in global Vue instance can have constant values, but every other component
+    // needs to return data values
+    data: {
+      
+    },
+    methods: {
+    }
+  })
+  </script>
+</body>
+
+</html>

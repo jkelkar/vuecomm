@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<!-- 2018 Jay Kelkar <jkelkar at gmail.com> -->
+<!-- Free to use in any form -->
+
+<head>
+  <meta charset="utf-8">
+  <title>A child talks back</title>
+  <script src="../../node_modules/vue/dist/vue.min.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="../../static/css/examples.css" />
+</head>
+
+<body>
+  <div id="app" class="fixed-width"> <!-- parent level -->
+    <h2>The child component talks back to the parent</h2>
+    <p>Causing change in the parent</p>
+    <h4 v-if="disabled">See button is gone!</h4>
+    <div v-show="!disabled">
+      <!-- NOTICE that the action is on the invocation of the child itself.
+        But now the context is that of the parent. So the method called is
+        in the parent. -->
+      <vbutton @iseeit="doDisable"></vbutton> <!-- child -->
+    </div>
+  </div>
+  <div class="notes">
+   
+  </div>
+  <script>
+  Vue.component('vbutton', {
+    // this is the child component
+    template: `
+    <div>
+<button @click="action" :class="{'green': active, 'red': !active}">
+  {{ btext }}
+</button>
+  </div>
+`,
+
+    data: function () {
+      return {
+        active: false,
+        clicked: false,
+        btext: 'Press It'
+      }
+    },
+    methods: {
+      action: function () {
+        let that = this
+        this.active = !this.active
+        this.clicked = true
+        this.$emit('iseeit')
+        //setTimeout(function () {
+        //  that.clicked = false
+        // }, 500) -->
+      }
+    }
+  })
+  // Main vue instance
+  var app = new Vue({
+    el: '#app',
+    // data in global Vue instance can have constant values, but every other component
+    // needs to return data values
+    data: {
+      disabled: false
+    },
+    methods: {
+      doDisable: function () {
+        let that = this
+        this.disabled = true
+        setTimeout(function () {
+          that.disabled = false
+        }, 2000)
+      }
+    }
+  })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<!-- 2018 Jay Kelkar <jkelkar at gmail.com> -->
+<!-- Free to use and share in any form -->
+
+<head>
+  <meta charset="utf-8">
+  <title>Component talks with data</title>
+  <script src="../../node_modules/vue/dist/vue.min.js" type="text/javascript"></script>
+  <link rel="stylesheet" type="text/css" href="../../static/css/examples.css" />
+</head>
+
+<body>
+  <div id="app" class="fixed-width"> <!-- grand parent level -->
+    <h2>Communicating and passing data</h2>
+    <p>Sharing data with other component</p>
+    <div class="bord">
+      Grandparent context
+      <div class="grand" v-if="received">Grandchild says: <b>{{gmessage}}</b></div>
+      <div class="bord"> 
+        Parent context
+       <vspace ></vspace>
+      </div>
+    </div>
+    <div class="bord">
+      Totally unrelated component
+      <show-pane></show-pane>
+    </div>
+    <div class="notes" v-if="received">
+    This is a good way to message a totally unrelated component without knowing anything about it. That component
+    only needs to know the name of the event being emitted.
+    </div>
+  </div>
+  
+  <script>
+      Vue.component('show-pane', {
+        // this is the child component
+        template: `
+    <div>
+      <div class="bord" v-if="seeit">I see it: <b>{{message}}</b>
+      </div>
+    </div>
+    `,
+        data: function () {
+          return {
+            seeit: false,
+            message: ''
+          }
+        },
+        mounted: async function () {
+          console.log('M')
+          this.ebus.$on('speaks', this.onhearing)
+        },
+        destroyed: function () {
+          console.log('D')
+          this.ebus.$off('speaks')
+        },
+        methods: {
+          onhearing: function (msg) {
+            let that = this
+            this.message = msg
+            setTimeout(function () {
+              that.seeit = true
+            }, 2000)
+          }
+        }
+      })
+
+      Vue.component('vspace', {
+        // this is the parent component
+        template: `
+<div>
+  <div class="parent" v-if="kidtalks">The kid wants something</div>
+  <div class="bord">
+    Child context
+    <vbutton>
+    </vbutton>
+  </div>
+</div>
+    `,
+    
+        data: function () {
+          return {
+            active: false,
+            seen: false,
+            kidtalks: false
+          }
+        }
+      })
+
+  Vue.component('vbutton', {
+    // this is the child component
+    template: `
+<div>
+  <button @click="action" :class="{'green': active, 'red': !active}">
+    {{ btext }}
+  </button>
+</div>
+`,
+
+    data: function () {
+      return {
+        active: false,
+        clicked: false,
+        btext: 'Press It'
+      }
+    },
+    methods: {
+      action: function () {
+        let that = this
+        this.active = !this.active
+        this.clicked = true
+        this.ebus.$emit('speaks', 'Hi Pops!')
+        //setTimeout(function () {
+        //  that.clicked = false
+        // }, 500) -->
+      }
+    }
+  })
+  // Main vue instance
+const EventBus = new Vue()
+Object.defineProperties(Vue.prototype, {
+  ebus: {
+    get () {
+      return EventBus
+    }
+  }
+})
+  var app = new Vue({
+    el: '#app',
+    // data in global Vue instance can have constant values, but every other component
+    // needs to return data values
+    data: {
+      received: false,
+      gmessage: ''
+    },
+    mounted: async function () {
+      console.log('M')
+      this.ebus.$on('speaks', this.hear)
+    },
+    destroyed: function () {
+      console.log('D')
+      this.ebus.$off('speaks')
+    },
+    methods: {
+      hear: function (msg) {
+        let that = this
+        this.gmessage = msg
+        setTimeout(function () {
+          that.received = true
+        }, 2000)
+      }
+    }
+  })
+  </script>
+</body>
+
+</html>
